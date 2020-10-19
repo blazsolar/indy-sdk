@@ -57,13 +57,11 @@ Cocoapod will search for spec files in the root Specs folder.
 1. Edit script ci/ios-build.sh: set the following variables to fit your environment:
    
    ```
-   export OPENSSL_DIR=/usr/local/Cellar/openssl/1.0.2q
    export LIBINDY_POD_VERSION=0.0.1
    ```
-   OPENSSL_DIR - path to installed openssl library
-      
    LIBINDY_POD_VERSION - version of libindy-core pod to be built
 1. Run the script Validate the output that all goes well. 
+  `ci/ios-build.sh {package} [{targets}]`
    
    Parameters:
    * package - target package to build.
