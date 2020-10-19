@@ -33,6 +33,8 @@
 
 - (NSString *)credentialId2;
 
+- (NSString *)credentialId3;
+
 - (NSString *)gvtCredDef;
 
 - (NSString *)proofJSON;

@@ -123,6 +123,10 @@
     return @"credentialID2";
 }
 
+- (NSString *)credentialId3 {
+    return @"credentialID3";
+}
+
 // NOTE: for Anoncreds test
 - (NSString *)gvtCredDef {
     return [NSString stringWithFormat:@"{"
@@ -1172,7 +1176,7 @@
 
     //18. Prover store GVT credential from Issuer2
     ret = [self proverStoreCredential:issuer2GvtCredential
-                               credID:@"credentialID3"
+                               credID:[self credentialId3]
                   credReqMetadataJSON:issuer2GvtCredentialRequestMetadata
                           credDefJSON:issuer2GvtCredentialDefJson
                         revRegDefJSON:nil
