@@ -11,7 +11,7 @@
         "Daniel Hardman": "daniel.hardman@evernym.com"
     },
     "source": {
-        "http": "https://raw.githubusercontent.com/blazsolar/indy-sdk/master/Specs/libindy-objc/1.15.0/libindy-objc.podspec.json"
+        "http": "https://raw.githubusercontent.com/blazsolar/indy-sdk/master/Specs/libindy-objc/1.15.0/Indy-Indy.framework.zip"
     },
     "platforms": {
         "ios": "10.2"
