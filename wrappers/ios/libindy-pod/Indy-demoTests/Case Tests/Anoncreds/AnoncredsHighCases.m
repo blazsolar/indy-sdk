@@ -112,6 +112,51 @@
     XCTAssertTrue([[[AnoncredsUtils sharedInstance] getIssuer1GvtCredDefId] isEqualToString:credential[@"cred_def_id"]]);
 }
 
+// MARK: Prover delete credentials
+
+- (void)testProverDeleteCredentialsWorks {
+    IndyHandle walletHandle = 0;
+
+    // 1. get wallet handle
+    ret = [[AnoncredsUtils sharedInstance] initializeCommonWalletAndReturnHandle:&walletHandle
+                                                               credentialDefJson:nil
+                                                             credentialOfferJson:nil
+                                                               credentialReqJson:nil
+                                                                  credentialJson:nil];
+    XCTAssertEqual(ret.code, Success, @"AnoncredsUtils::initializeCommonWalletAndReturnHandle failed");
+
+    // 2. delete credential
+    ret = [[AnoncredsUtils sharedInstance] proverDeleteCredentialsWithId:[[AnoncredsUtils sharedInstance] credentialId1]
+                                                            walletHandle:walletHandle];
+    XCTAssertEqual(ret.code, Success, @"AnoncredsUtils::proverDeleteCredentialsWithId failed");
+
+    // 3. get credential
+    NSString *credentialJson;
+    ret = [[AnoncredsUtils sharedInstance] proverGetCredentialWithId:[[AnoncredsUtils sharedInstance] credentialId1]
+                                                        walletHandle:walletHandle
+                                                      credentialJson:&credentialJson];
+    XCTAssertEqual(ret.code, WalletItemNotFound, @"AnoncredsUtils::proverGetCredentialsForWalletHandle credential available even tho it was deleted");
+
+}
+
+- (void)testProverDeleteCredentialsWorksForNonexistingId {
+    IndyHandle walletHandle = 0;
+
+    // 1. get wallet handle
+    ret = [[AnoncredsUtils sharedInstance] initializeCommonWalletAndReturnHandle:&walletHandle
+                                                               credentialDefJson:nil
+                                                             credentialOfferJson:nil
+                                                               credentialReqJson:nil
+                                                                  credentialJson:nil];
+    XCTAssertEqual(ret.code, Success, @"AnoncredsUtils::initializeCommonWalletAndReturnHandle failed");
+
+    // 2. delete non-existing credential
+    ret = [[AnoncredsUtils sharedInstance] proverDeleteCredentialsWithId:[[[AnoncredsUtils sharedInstance] credentialId1] stringByAppendingString:@"a"]
+                                                            walletHandle:walletHandle];
+    XCTAssertEqual(ret.code, WalletItemNotFound, @"AnoncredsUtils::proverDeleteCredentialsWithId failed");
+
+}
+
 // MARK: - Prover get credentials
 
 - (void)testProverGetCredentialsWorksForEmptyFilter {

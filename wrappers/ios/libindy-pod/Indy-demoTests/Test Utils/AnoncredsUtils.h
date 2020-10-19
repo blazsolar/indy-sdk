@@ -131,6 +131,9 @@
                           walletHandle:(IndyHandle)walletHandle
                         credentialJson:(NSString **)outCredentialJson;
 
+- (NSError *)proverDeleteCredentialsWithId:(NSString *)credId
+                              walletHandle:(IndyHandle)walletHandle;
+
 - (NSError *)proverGetCredentialsForFilter:(NSString *)filterJSON
                               walletHandle:(IndyHandle)walletHandle
                             credentilsJson:(NSString **)credentialsJson;

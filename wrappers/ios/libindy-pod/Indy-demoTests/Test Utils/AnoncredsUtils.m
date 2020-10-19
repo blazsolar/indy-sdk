@@ -611,6 +611,25 @@
     return err;
 }
 
+- (NSError *)proverDeleteCredentialsWithId:(NSString *)credId
+                              walletHandle:(IndyHandle)walletHandle {
+    __block NSError *err = nil;
+    XCTestExpectation *completionExpectation = nil;
+
+    completionExpectation = [[XCTestExpectation alloc] initWithDescription:@"completion finished"];
+
+    [IndyAnoncreds proverDeleteCredentialsWithId:credId
+                                    walletHandle:walletHandle
+                                      completion:^(NSError *error) {
+        err = error;
+        [completionExpectation fulfill];
+    }];
+
+    [self waitForExpectations:@[completionExpectation] timeout:[TestUtils defaultTimeout]];
+    return err;
+
+}
+
 - (NSError *)proverGetCredentialsForFilter:(NSString *)filterJSON
                               walletHandle:(IndyHandle)walletHandle
                             credentilsJson:(NSString **)credentialsJson {
