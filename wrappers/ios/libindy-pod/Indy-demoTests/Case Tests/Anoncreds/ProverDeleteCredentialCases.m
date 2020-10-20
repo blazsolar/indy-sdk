@@ -4,11 +4,11 @@
 #import "WalletUtils.h"
 #import "AnoncredsUtils.h"
 
-@interface AAProverDeleteCredentialCases : XCTestCase
+@interface ProverDeleteCredentialCases : XCTestCase
 
 @end
 
-@implementation AAProverDeleteCredentialCases {
+@implementation ProverDeleteCredentialCases {
     NSError *ret;
 }
 
@@ -21,6 +21,7 @@
 }
 
 - (void)tearDown {
+    [AnoncredsUtils clearInstance];
     // Put teardown code here. This method is called after the invocation of each test method in the class.
     [super tearDown];
 }

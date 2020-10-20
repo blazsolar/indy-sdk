@@ -17,15 +17,28 @@
 
 + (AnoncredsUtils *)sharedInstance {
     static AnoncredsUtils *instance = nil;
-    static dispatch_once_t dispatch_once_block;
 
-    dispatch_once(&dispatch_once_block, ^{
-        instance = [AnoncredsUtils new];
-        instance.isCommonWalletCreated = false;
-        instance.walletHandle = 0;
-    });
+    @synchronized(self) {
+        if (instance == nil) {
+            instance = [AnoncredsUtils new];
+            instance.isCommonWalletCreated = false;
+            instance.walletHandle = 0;
+        }
+    }
 
     return instance;
+}
+
++ (void)clearInstance {
+    @synchronized (self) {
+        AnoncredsUtils *utils = [AnoncredsUtils sharedInstance];
+        utils.walletHandle = 0;
+        utils.singletoneCredentialdefJson = nil;
+        utils.singletoneCredentialofferJson = nil;
+        utils.singletoneCredentialreqJson = nil;
+        utils.singletoneCredentialJson = nil;
+        utils.isCommonWalletCreated = false;
+    }
 }
 
 // MARK: - Json configurators

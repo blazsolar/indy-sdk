@@ -11,6 +11,8 @@
 
 + (AnoncredsUtils *)sharedInstance;
 
++ (void)clearInstance;
+
 - (NSString *)defaultCredentialDefConfig;
 
 - (NSString *)getGvtSchemaId;
