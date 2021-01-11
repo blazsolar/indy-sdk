@@ -55,12 +55,9 @@ afterEvaluate {
         // TODO update for hyperledger deploy
         repositories {
             maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/blazsolar/indy-sdk")
-                credentials {
-                    username = project.findProperty("gpr.user") ?: null
-                    password = project.findProperty("gpr.key") ?: null
-                }
+                name = "globalidMaven"
+                url = "https://repository.internal.globalid.dev/repository/maven-internal/"
+                credentials(PasswordCredentials)
             }
         }
     }
