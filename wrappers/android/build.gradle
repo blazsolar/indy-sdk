@@ -46,7 +46,7 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = 'org.hyperledger.android'
+                groupId = 'id.global.android'
                 artifactId = 'indy'
                 version = '0.3.0'
             }
