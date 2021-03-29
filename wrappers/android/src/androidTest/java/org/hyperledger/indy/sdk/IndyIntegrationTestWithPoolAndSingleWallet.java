@@ -40,7 +40,7 @@ public class IndyIntegrationTestWithPoolAndSingleWallet extends IndyIntegrationT
 		}
 	}
 
-	protected void checkResponseType(String response, String expectedType) throws JSONException {
+		protected void checkResponseType(String response, String expectedType) throws JSONException {
 		assertTrue(compareResponseType(response, expectedType));
 	}
 

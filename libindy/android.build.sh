@@ -155,8 +155,8 @@ build(){
     pushd ${WORKDIR}
         rm -rf target/${TRIPLET}
         cargo clean
-        RUSTFLAGS="-C link-args=-Wl -lc++_shared" \
-        cargo build --release --target=${TRIPLET}
+        RUSTFLAGS="-g -C link-args=-Wl -lc++_shared" \
+        cargo build --target=${TRIPLET}
 
     popd
 }

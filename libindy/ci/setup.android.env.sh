@@ -6,14 +6,11 @@ if [ -z "${ANDROID_BUILD_FOLDER}" ]; then
     echo STDERR "e.g. x86 or arm"
     exit 1
 fi
-ANDROID_SDK=${ANDROID_BUILD_FOLDER}/sdk
-export ANDROID_SDK_ROOT=${ANDROID_SDK}
-export ANDROID_HOME=${ANDROID_SDK}
-export PATH=${PATH}:${ANDROID_HOME}/platform-tools
-export PATH=${PATH}:${ANDROID_HOME}/tools
-export PATH=${PATH}:${ANDROID_HOME}/tools/bin
+export ANDROID_SDK_ROOT=${ANDROID_BUILD_FOLDER}/sdk
+export PATH=${PATH}:${ANDROID_SDK_ROOT}/platform-tools
+export PATH=${PATH}:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin
 
-mkdir -p ${ANDROID_SDK}
+mkdir -p ${ANDROID_SDK_ROOT}
 
 TARGET_ARCH=$1
 
@@ -43,6 +40,7 @@ check_if_emulator_is_running(){
 kill_avd(){
     adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done || true
 }
+
 delete_existing_avd(){
     kill_avd
     avdmanager delete avd -n ${ABSOLUTE_ARCH}
@@ -58,7 +56,7 @@ create_avd(){
 
     yes | sdkmanager --licenses
 
-    if [ ! -d "${ANDROID_SDK}/emulator/" ] ; then
+    if [ ! -d "${ANDROID_SDK_ROOT}/emulator/" ] ; then
         echo "yes" |
               sdkmanager --no_https \
                 "emulator" \
@@ -83,7 +81,7 @@ create_avd(){
                 -f \
                 -c 1000M
 
-        ANDROID_SDK_ROOT=${ANDROID_SDK} ANDROID_HOME=${ANDROID_SDK} ${ANDROID_HOME}/tools/emulator -avd ${ABSOLUTE_ARCH} -no-audio -no-window -no-snapshot -no-accel &
+        ${ANDROID_SDK_ROOT}/tools/emulator -avd ${ABSOLUTE_ARCH} -no-audio -no-window -no-snapshot -no-accel &
 }
 
 download_and_unzip_if_missed() {
@@ -103,8 +101,21 @@ download_and_unzip_if_missed() {
 }
 
 download_sdk(){
-    pushd ${ANDROID_SDK}
-        download_and_unzip_if_missed "tools" "https://dl.google.com/android/repository/" "sdk-tools-linux-4333796.zip"
+    pushd ${ANDROID_SDK_ROOT}
+        download_and_unzip_if_missed "cmdline-tools" "https://dl.google.com/android/repository/" "commandlinetools-linux-6858069_latest.zip"
+        
+        # Workaround for command line tool issue where it is in incorrect location
+        mv cmdline-tools cmdline-tools-tmp
+        mkdir -p cmdline-tools/latest
+        mv cmdline-tools-tmp/* cmdline-tools/latest
+        rm -R cmdline-tools-tmp
+
+        # Accept licanses
+        mkdir licenses
+        pushd licenses
+            # https://developer.android.com/studio/terms
+            echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" >> android-sdk-license
+        popd
     popd
 }
 
@@ -145,7 +156,7 @@ generate_arch_flags(){
     if [ $1 == "arm64" ]; then
         export TARGET_API="21"
         export TRIPLET="aarch64-linux-android"
-        export ANDROID_TRIPLET=${TRIPLET}
+        export ANDROID_TRIPLET="${TRIPLET}"
         export ABI="arm64-v8a"
         export TOOLCHAIN_SYSROOT_LIB="lib"
     fi
@@ -153,7 +164,7 @@ generate_arch_flags(){
     if [ $1 == "x86" ]; then
         export TARGET_API="21"
         export TRIPLET="i686-linux-android"
-        export ANDROID_TRIPLET=${TRIPLET}
+        export ANDROID_TRIPLET="${TRIPLET}"
         export ABI="x86"
         export TOOLCHAIN_SYSROOT_LIB="lib"
     fi
@@ -161,7 +172,7 @@ generate_arch_flags(){
     if [ $1 == "x86_64" ]; then
         export TARGET_API="21"
         export TRIPLET="x86_64-linux-android"
-        export ANDROID_TRIPLET=${TRIPLET}
+        export ANDROID_TRIPLET="${TRIPLET}"
         export ABI="x86_64"
         export TOOLCHAIN_SYSROOT_LIB="lib64"
     fi
@@ -186,14 +197,6 @@ setup_dependencies_env_vars(){
 
 
 create_standalone_toolchain_and_rust_target(){
-    #will only create toolchain if not already created
-    python3 ${ANDROID_NDK_ROOT}/build/tools/make_standalone_toolchain.py \
-    --arch ${TARGET_ARCH} \
-    --api ${TARGET_API} \
-    --stl=libc++ \
-    --force \
-    --install-dir ${TOOLCHAIN_DIR}
-
     # add rust target
     rustup target add ${TRIPLET}
 }
@@ -201,22 +204,8 @@ create_standalone_toolchain_and_rust_target(){
 
 
 download_and_setup_toolchain(){
-    if [ "$(uname)" == "Darwin" ]; then
-        export TOOLCHAIN_PREFIX=${ANDROID_BUILD_FOLDER}/toolchains/darwin
-        mkdir -p ${TOOLCHAIN_PREFIX}
-        pushd $TOOLCHAIN_PREFIX
-        echo "${GREEN}Resolving NDK for OSX${RESET}"
-        download_and_unzip_if_missed "android-ndk-r20" "https://dl.google.com/android/repository/" "android-ndk-r20-darwin-x86_64.zip"
-        popd
-    elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-        export TOOLCHAIN_PREFIX=${ANDROID_BUILD_FOLDER}/toolchains/linux
-        mkdir -p ${TOOLCHAIN_PREFIX}
-        pushd $TOOLCHAIN_PREFIX
-        echo "${GREEN}Resolving NDK for Linux${RESET}"
-        download_and_unzip_if_missed "android-ndk-r20" "https://dl.google.com/android/repository/" "android-ndk-r20-linux-x86_64.zip"
-        popd
-    fi
-    export ANDROID_NDK_ROOT=${TOOLCHAIN_PREFIX}/android-ndk-r20
+    sdkmanager "ndk;22.1.7171670"
+    export ANDROID_NDK_ROOT=${ANDROID_SDK_ROOT}/ndk/22.1.7171670
 }
 
 
@@ -231,13 +220,13 @@ set_env_vars(){
     export SODIUM_INCLUDE_DIR=${SODIUM_DIR}/include
     export LIBZMQ_LIB_DIR=${LIBZMQ_DIR}/lib
     export LIBZMQ_INCLUDE_DIR=${LIBZMQ_DIR}/include
-    export TOOLCHAIN_DIR=${TOOLCHAIN_PREFIX}/${TARGET_ARCH}
+    export TOOLCHAIN_DIR=${TOOLCHAIN_PREFIX}
     export PATH=${TOOLCHAIN_DIR}/bin:${PATH}
     export PKG_CONFIG_ALLOW_CROSS=1
-    export CC=${TOOLCHAIN_DIR}/bin/${ANDROID_TRIPLET}-clang
+    export CC=${TOOLCHAIN_DIR}/bin/${ANDROID_TRIPLET}${TARGET_API}-clang
     export AR=${TOOLCHAIN_DIR}/bin/${ANDROID_TRIPLET}-ar
-    export CXX=${TOOLCHAIN_DIR}/bin/${ANDROID_TRIPLET}-clang++
-    export CXXLD=${TOOLCHAIN_DIR}/bin/${ANDROID_TRIPLET}-ld
+    export CXX=${TOOLCHAIN_DIR}/bin/${ANDROID_TRIPLET}${TARGET_API}-clang++
+    export CXXLD=${TOOLCHAIN_DIR}/bin/ld
     export RANLIB=${TOOLCHAIN_DIR}/bin/${ANDROID_TRIPLET}-ranlib
     export TARGET=android
     export OPENSSL_STATIC=1
