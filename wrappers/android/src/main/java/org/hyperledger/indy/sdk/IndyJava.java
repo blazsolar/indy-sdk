@@ -8,10 +8,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java9.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import java9.util.concurrent.CompletableFuture;
 
 /**
  * Common functionality for the APIs, JSON parameters, and results used
@@ -88,7 +87,7 @@ public class IndyJava {
 		protected static boolean checkResult(CompletableFuture<?> future, int err) {
 
 			ErrorCode errorCode = ErrorCode.valueOf(err);
-			if (!ErrorCode.Success.equals(errorCode)) {
+			if (! ErrorCode.Success.equals(errorCode)) {
 
 				IndyException indyException = IndyException.fromSdkError(err);
 				future.completeExceptionally(indyException);

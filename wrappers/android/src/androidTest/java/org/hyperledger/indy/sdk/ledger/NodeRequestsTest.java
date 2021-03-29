@@ -39,6 +39,7 @@ public class NodeRequestsTest extends IndyIntegrationTestWithPoolAndSingleWallet
 	}
 
 	@Test
+	@Ignore
 	public void testSendNodeRequestWorksForNewSteward() throws Exception {
 		DidResults.CreateAndStoreMyDidResult didResult = Did.createAndStoreMyDid(wallet, TRUSTEE_IDENTITY_JSON).get();
 		String trusteeDid = didResult.getDid();
