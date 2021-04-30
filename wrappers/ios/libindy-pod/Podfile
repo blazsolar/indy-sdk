@@ -1,19 +1,19 @@
 source 'https://github.com/CocoaPods/Specs.git'
-source 'https://github.com/hyperledger/indy-sdk.git'
-platform :ios, '10.2'
+source 'https://github.com/blazsolar/indy-sdk.git'
+platform :ios, '11.0'
 
 workspace 'Indy.xcworkspace'
 
 def appPods
     pod 'libsodium'
     pod 'libzmq', "4.2.3"
-    pod 'OpenSSL'
-    pod 'libindy', "1.15.0"
+    pod 'OpenSSL-Universal'
+    pod 'libindy', "1.16.0"
 end
 
 target 'Indy-demo' do
     project 'Indy-demo'
-    pod 'CoreBitcoin', :podspec => 'https://raw.github.com/oleganza/CoreBitcoin/master/CoreBitcoin.podspec'
+#    pod 'CoreBitcoin', :podspec => 'https://raw.github.com/oleganza/CoreBitcoin/master/CoreBitcoin.podspec'
 
     target 'Indy-demoTests' do
 	inherit! :search_paths

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -50,6 +50,7 @@
 		DDEE2A6421C14062009BDDA8 /* IndyLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DDEE2A6321C14062009BDDA8 /* IndyLogger.m */; };
 		DDEE2A6521C144E3009BDDA8 /* IndyLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = DDEE2A6221C1404A009BDDA8 /* IndyLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E32B103AE817115C80F0142F /* libPods-Indy.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 788BE98286C5622244B9A7F5 /* libPods-Indy.a */; };
+		ECDD35B8263C03AD00D9A7AE /* OpenSSL.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECDD35B4263C010B00D9A7AE /* OpenSSL.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -100,6 +101,7 @@
 		CB6A56DBDD1F10585C90ECA8 /* Pods-Indy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Indy.release.xcconfig"; path = "Pods/Target Support Files/Pods-Indy/Pods-Indy.release.xcconfig"; sourceTree = "<group>"; };
 		DDEE2A6221C1404A009BDDA8 /* IndyLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IndyLogger.h; sourceTree = "<group>"; };
 		DDEE2A6321C14062009BDDA8 /* IndyLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IndyLogger.m; sourceTree = "<group>"; };
+		ECDD35B4263C010B00D9A7AE /* OpenSSL.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OpenSSL.xcframework; path = "Pods/OpenSSL-Universal/Frameworks/OpenSSL.xcframework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +109,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ECDD35B8263C03AD00D9A7AE /* OpenSSL.xcframework in Frameworks */,
 				3E8809E51EB88AED00E0AA5F /* libsqlite3.0.tbd in Frameworks */,
 				E32B103AE817115C80F0142F /* libPods-Indy.a in Frameworks */,
 			);
@@ -118,6 +121,7 @@
 		2C11A2035B94F34DF5CCDB2A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				ECDD35B4263C010B00D9A7AE /* OpenSSL.xcframework */,
 				3E8809E41EB88AED00E0AA5F /* libsqlite3.0.tbd */,
 				788BE98286C5622244B9A7F5 /* libPods-Indy.a */,
 			);
@@ -288,7 +292,6 @@
 				TargetAttributes = {
 					3E08C01A1EB3336A000A73BA = {
 						CreatedOnToolsVersion = 8.3.2;
-						DevelopmentTeam = MZ3U758J7T;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
@@ -299,6 +302,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 3E08C0111EB3336A000A73BA;
@@ -423,7 +427,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -477,10 +481,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -498,7 +503,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = MZ3U758J7T;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -506,8 +511,12 @@
 				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Indy/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/build/Debug-iphoneos",
@@ -515,11 +524,9 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
-					"-l\"crypto\"",
 					"-l\"indy\"",
 					"-l\"libsodium\"",
 					"-l\"libzmq\"",
-					"-l\"ssl\"",
 					"-l\"stdc++\"",
 					"-\"lpthread\"",
 					"-\"lresolv\"",
@@ -532,7 +539,10 @@
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "$(PROJECT_NAME)-Swift.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
-				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/$(PRODUCT_NAME).framework/Headers $(CONTENTS_FOLDER_PATH)/Headers";
+				USER_HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/$(PRODUCT_NAME).framework/Headers",
+					"$(CONTENTS_FOLDER_PATH)/Headers",
+				);
 			};
 			name = Debug;
 		};
@@ -546,7 +556,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = MZ3U758J7T;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -554,8 +564,12 @@
 				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Indy/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/build/Debug-iphoneos",
@@ -563,11 +577,9 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
-					"-l\"crypto\"",
 					"-l\"indy\"",
 					"-l\"libsodium\"",
 					"-l\"libzmq\"",
-					"-l\"ssl\"",
 					"-l\"stdc++\"",
 					"-\"lpthread\"",
 					"-\"lresolv\"",
