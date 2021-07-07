@@ -1,0 +1,92 @@
+static def getLintTask(def debugBuild, def branch) {
+    if (debugBuild && branch.startsWith("PR-")) {
+        return ":target:mobile:app:lintCurrentStageDebug"
+    } else {
+        return ":target:mobile:app:lintCurrentProdRelease"
+    }
+}
+
+def withDockerNetwork(Closure inner) {
+    def n = UUID.randomUUID().toString()
+    try {
+        sh "docker network create --subnet 10.0.0.0/8 $n"
+        inner.call(n)
+    } finally {
+        sh "docker network rm $n"
+    }
+}
+
+
+pipeline {
+    agent none
+
+    parameters {
+        choice(name: 'emulatorVersion', choices: ['30-google-x64', '29-google-x64', '28-playstore-x64'], description: 'Emulator version')
+    }
+
+    triggers {
+        parameterizedCron(env.BRANCH_NAME.startsWith("develop") ? '0 4 * * * % lintTask=true;cleanTests=true;notifyFailure=true' : '')
+    }
+
+    options { timeout(time: 2, unit: 'HOURS') }
+
+    stages {
+        stage("Tests") {
+            parallel {
+                stage('Device Tests') {
+                    // This is tmp config until declerative pipeline does not support sidecard docker images
+                    //  https://issues.jenkins-ci.org/browse/JENKINS-46336?page=com.atlassian.jira.plugin.system.issuetabpanels%3Aall-tabpanel
+                    agent { label 'docker' }
+
+                    options {
+                        timeout(time: 2, unit: "HOURS")
+                    }
+
+                    when {
+                        expression { skipCi() }
+                    }
+
+                    steps {
+                        sh "echo \"Node: ${NODE_NAME}\""
+                        script {
+                            withDockerNetwork { n ->
+                                docker.build('pool-image', "--build-arg pool_ip=10.0.0.2 -f ci/indy-pool.dockerfile ./ci")
+                                    .withRun("--ip=\"10.0.0.2\" --net=$n") { poolImage ->
+
+                                        docker.image("us-docker.pkg.dev/android-emulator-268719/images/${params.emulatorVersion}:30.1.2")
+                                                .withRun("--device /dev/kvm --ip=\"10.0.0.3\" --net=$n") { emulatorImage ->
+
+                                                    docker.build('platform-image', "--build-arg hostUid=\$(id -u) --build-arg hostGid=\$(id -g) wrappers/android/config/docker/platform")
+                                                            .inside("-v \$HOME/.gradle:/home/jenkins/.gradle --ip=\"10.0.0.4\" --net=$n") {
+                                                                dir("wrappers/android") {
+                                                                    sh "sleep 10 && adb connect 10.0.0.3:5555"
+                                                                    // Wait 10 seconds before connecting to device so we make sure docker image & emulator is spun up
+                                                                    sh "wait-for-emulator"
+                                                                    // connected check cannot run in parallel.
+                                                                    try {
+                                                                        sh "./gradlew  connectedAndroidTest --console=verbose --no-daemon -Pandroid.builder.sdkDownload=false"
+                                                                    } finally {
+                                                                        sh "adb logcat -d"
+                                                                    }
+                                                                }
+                                                            }
+
+                                                }
+
+                                    }
+                            }
+                        }
+                    }
+
+                    post {
+                        always {
+                            junit 'wrappers/android/build/outputs/androidTest-results/connected/**/TEST-*.xml'
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+}
